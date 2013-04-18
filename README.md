@@ -1,4 +1,5 @@
 Oracle Solaris 11 Demo Toolkit
+==============================
 
 April 2013
 
@@ -53,52 +54,39 @@ you have downloaded.
 Usage
 -----
 
-1. Allow the demo to run X11 graphical programs
+1) Allow the demo to run X11 graphical programs
 
-user@solaris:~$ xhost +
+  user@solaris:~$ xhost +
 
-2. Log in as root
+2) Log in as root
 
-user@solaris:~$ su -
-Password:
-root@solaris:~#
+  root@solaris:~$ su -
+  Password:
+  root@solaris:~#
 
-3. Start the Oracle Solaris 11 Demo Toolkit
+3) Start the Oracle Solaris 11 Demo Toolkit
 
-root@solaris:~$ cd solaris-11-demo-toolkit
-root@solaris:~$ ./mainmenu
+  root@solaris:~$ cd solaris-11-demo-toolkit
+  root@solaris:~$ ./mainmenu
 
-4. Choose topic (ZFS, Zones, Boot Environments, etc.) and demo inside the
-   topic. After the demo is finished, it returns to the menu.
+4) Choose topic (ZFS, Zones, Boot Environments, etc.) and demo inside the topic. After the demo is finished, it returns to the menu.
 
-5. Most of the demos are independent and can be run in any order, but some
-   demos (e.g. in Zones) should be performed in the order the appear in
-   the menu. For example, zone cloning should go after zone installation.
-   For such demos it will be mentioned at the start of the demo.
+5) Most of the demos are independent and can be run in any order, but some demos (e.g. in Zones) should be performed in the order the appear in the menu. For example, zone cloning should go after zone installation. For such demos it will be mentioned at the start of the demo.
 
 Editing and creating your own demos
 -----------------------------------
 
-This toolkit uses a Perl module called demotools.pm created by Christoph
-Schuba. The scripts also use Term::ANSIColor module to produce color output in
-terminal screens. A demo script consists of two parts: the story part and the
-commands part. 
+This toolkit uses a Perl module called demotools.pm created by Christoph Schuba. The scripts also use Term::ANSIColor module to produce color output in terminal screens. A demo script consists of two parts: the story part and the commands part. 
 
-You can edit the demo scripts yourself to adjust them to your particular
-situation or installation.
+You can edit the demo scripts yourself to adjust them to your particular situation or installation.
 
-If you want to produce your own scripts, the Python script scripts/makedemo.py
-is provided to generate Perl demo scripts from a simple text file. The source
-text file has a pretty simple format:
+If you want to produce your own scripts, the Python script scripts/makedemo.py is provided to generate Perl demo scripts from a simple text file. The source text file has a pretty simple format:
 
-  If a line starts with "S ", then it translates into a story
-  line with a defined color in Perl script.
+If a line starts with "S ", then it translates into a story line with a defined color in Perl script.
 
-  If it starts with "C ", then it becomes a command line in
-  scripts/demotools.pm notation.
+If it starts with "C ", then it becomes a command line in scripts/demotools.pm notation.
 
-  If none of the above, the string is copied to the demo Perl
-  script unchanged (that means it should be written in Perl).
+If none of the above, the string is copied to the demo Perl script unchanged (that means it should be written in Perl).
 
 License
 -------
@@ -109,9 +97,9 @@ http://opensource.org/licenses/cddl1.php
 Contributors
 ------------
 
-Pavel Anni
-Jim Fiori
-Jim Helmstetter
-Christoph Schuba
-Glynn Foster
-Art Beckman
+- Pavel Anni
+- Jim Fiori
+- Jim Helmstetter
+- Christoph Schuba
+- Glynn Foster
+- Art Beckman
