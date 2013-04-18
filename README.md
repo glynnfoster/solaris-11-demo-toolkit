@@ -61,12 +61,15 @@ Usage
 2) Log in as root
 
   root@solaris:~$ su -
+
   Password:
+
   root@solaris:~#
 
 3) Start the Oracle Solaris 11 Demo Toolkit
 
   root@solaris:~$ cd solaris-11-demo-toolkit
+
   root@solaris:~$ ./mainmenu
 
 4) Choose topic (ZFS, Zones, Boot Environments, etc.) and demo inside the topic. After the demo is finished, it returns to the menu.
