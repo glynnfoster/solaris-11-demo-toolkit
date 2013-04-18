@@ -1,0 +1,34 @@
+S In this demo we will show how to create an activate Boot Environments
+S 
+S In Oracle Solaris 11 there is only one command to manage Boot Environments:
+S            beadm(1M)
+S
+S Let's start with listing all available boot environments:
+C beadm list
+S You see the boot environment's name and if it's active. Letter N in the
+S Active column means this BE is active Now, letter R means it will be active
+S after reboot.
+S Let's create a new boot environment, which will be cloned from the current
+S one.
+C beadm create new-be
+C beadm list
+S If we want to boot this BE at the next boot, we have to make it active.
+C beadm activate new-be
+C beadm list
+S Do you see the difference? solaris BE is active Now, but new-be will be
+S active on the next Reboot.
+S But before rebooting let's imagine we want to install and/or update a
+S couple of packages, but we want to have a backup plan in case something
+S goes wrong.
+S
+S To do that, we can mount the new BE and install packages there using pkg(1)
+S command.
+C beadm mount new-be /mnt
+C ls /mnt
+C pkg -R /mnt install tomcat
+S We have installed a Tomcat server in our new boot environment. Make sure
+S that Tomcat is not installed in the current boot environment:
+C svcs *tomcat*
+S We can check that the sizes between the two boot environments have
+S changed
+C beadm list

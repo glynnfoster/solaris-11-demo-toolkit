@@ -1,0 +1,3 @@
+create
+set zonepath=/zones/zone1
+exit

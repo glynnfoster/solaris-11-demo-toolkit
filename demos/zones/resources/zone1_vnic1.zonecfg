@@ -1,0 +1,7 @@
+create -F
+set zonepath=/zones/zone1
+add net
+set physical=vnic1
+end
+verify
+exit

@@ -1,0 +1,33 @@
+S This script demonstrates some of the key features of the Image Packaging
+S System (IPS). IPS is a network based package management system, new to
+S Oracle Solaris 11.
+S
+S IPS uses network package repositories to install softare from. These
+S package repositories can be remote and served over http or https, or
+S local to the system.
+S
+S So the first thing we do is show our currently configured repositories.
+S A publisher is someone or a group who makes software available through
+S package repositories.
+S
+C pkg publisher
+S We can show some details about this publisher, like how many software
+S packages it includes, and when it was last updated
+C pkgrepo info -s http://pkg.oracle.com/solaris/release
+S Let's now look at what packages have been installed on this system
+C pkg list
+S Let's also do a quick count of those packages
+C pkg list | wc -l
+S We can also list how many packages are available in the repository that
+S can be installed
+C pkg list -a | wc -l
+S Let's take look at the gzip package and get some basic information about it.
+S First of all, let's look at a summary of the package
+C pkg info gzip
+S Now that we've seen some basic information, let's try and find out some
+S information about what the gzip package contains
+C pkg contents gzip
+S Lastly, we show how you can view a history of package commands
+C pkg history
+S And a verbose history
+C pkg history -l|more

@@ -1,0 +1,64 @@
+S In this demo we will show a simple situation where DTrace can help 
+S while other system tools are unable to solve the problem.
+S 
+S We will start with creating this "mystery workload". 
+C ./mystery.sh
+S Now pretend that you know nothing about this workload.
+S 
+S So the story begins... Your users start calling you and telling
+S that "the system is slow today". What do you usually do?
+S We'll start with vmstat:
+C vmstat 2
+S It shows that system time is enormously high, idle time is 0%.
+S OK, let's find out who is using CPU now. prstat or top should help.
+C prstat
+print RESET;
+C top
+print RESET;
+S They both show nothing... Only a couple of processes with 7-10% consumption.
+S Nothing even close to a really busy process. What is happening here?
+S Let's think: high system time means a lot of system calls, right?
+S The was a one-liner to find out who is issuing most of system calls.
+S Here you are:
+S dtrace -n 'syscall:::entry { @num[execname] = count(); }' 
+S Does it look cryptic to you? No worries: we have just instructed 
+S DTrace to count ("count()") every system call ("syscall") when 
+S it starts ("entry") then aggregate that numbers of system calls 
+S by program name ("execname") and sort the output. 
+S Let's start the command, wait a little bit (until it shows the numbers
+S of probes) and then stop it with Ctrl-C.
+C dtrace -n 'syscall:::entry { @num[execname] = count(); }' 
+S You see? At the bottom of the list there is the "date" command. It is 
+S issuing a lot of system calls. Now try to find it with ps and grep:
+C ps -ef | grep date | grep -v grep
+S Nothing... This is strange. (You might see a single date command if 
+S your system or your VirtualBox is slow.)
+S Let's try another script: what new processes 
+S are being started?
+S dtrace -qn 'syscall::exec*:return { printf("%Y %s\\n",walltimestamp,curpsinfo->pr_psargs); }'  
+S Now we are counting not every system call, but just exec* system calls. 
+S Then we are instructing DTrace to output time and process arguments. 
+S
+C dtrace -qn 'syscall::exec*:return { printf("%Y %s\\n",walltimestamp,curpsinfo->pr_psargs); }'  
+S Now we see a lot of "date" commands that are being started each second! 
+S They start and end almost immediately--that's why we didn't see then 
+S in ps -ef! But who runs all these "date" commands? Let's modify the script 
+S a little bit and print out not only arguments, but also process ID and
+S parent process ID.
+S dtrace -qn 'syscall::exec*:return  { printf("%Y %s %d %d\\n",walltimestamp,curpsinfo->pr_psargs,curpsinfo->pr_pid,curpsinfo->pr_ppid); }' 
+C dtrace -qn 'syscall::exec*:return  { printf("%Y %s %d %d\\n",walltimestamp,curpsinfo->pr_psargs,curpsinfo->pr_pid,curpsinfo->pr_ppid); }' 
+S Now you see a lot of "date" commands all spawned from the same parent
+S process.
+print "Enter here the process ID of that parent process: ";
+$pid = <STDIN>;
+S It's easy now to find this process using ps:
+C ps -ef | grep $pid
+S It's time to get rid of that process:
+C kill $pid
+S Check the system's status with vmstat again:
+C vmstat 2
+S This looks much better!
+S
+S Now you see that DTrace can be helpful where other system tools can't 
+S find the problem's root cause.
+demotools::wait4enter;

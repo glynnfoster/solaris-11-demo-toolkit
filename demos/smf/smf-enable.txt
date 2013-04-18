@@ -1,0 +1,34 @@
+S This script demonstrates how to enable and disable services using the 
+S Service Management Facility (SMF).
+S
+S Let's first take a look at all services that have been installed on the
+S system - this list includes both enabled and disabled services.
+C svcs -a
+S Lets's take a look at the svc:/application/management/net-snmp:default
+S service
+C svcs -l net-snmp
+S Let's enable this service (and enable any other services that are marked as
+S service dependencies for net-snmp)
+C svcadm enable net-snmp
+S And we can check the service status again
+C svcs -l net-snmp
+S We can use the -p option to check what processes have been started due to
+S this service being enabled
+C svcs -p net-snmp
+S And indeed the SNMP agent works as expected
+C snmpwalk -v 1 -c public localhost
+S One of the core features of SMF is the ability to restart services in the
+S event there is a failure. Let's kill the snmpd daemon and see what happens
+S to it
+C pkill snmpd
+S On a legacy system that's using the init start-up mechanism we may encounter
+S a failure, but not with SMF. Let's check the status of our service
+C svcs net-snmp
+S And we can double check this by looking for the snmpd daemon in a process
+S listing.
+C ps -ef | grep snmpd
+S We can easily disable this service if we do not need it again
+C svcadm disable net-snmp
+S And make sure the snmpd process is no longer running
+C svcs net-snmp
+C ps -ef | grep snmpd

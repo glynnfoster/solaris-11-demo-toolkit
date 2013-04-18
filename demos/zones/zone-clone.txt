@@ -1,0 +1,44 @@
+$ENV{DISPLAY}='localhost:0';
+
+S In this demo we will show how you can clone the existing zone while 
+S preserving its installed services. 
+S 
+S We are going to clone zone1 (if you don't have it installed, please 
+S exit this demo and run the \"Zone Installation\" demo.
+S Check if we have zone1 installed
+C zoneadm list -cv
+S We should stop the zone before cloning:
+C zoneadm -z zone1 halt
+S We create the new zone using zonecfg and configuration file. 
+S The new zone will be called zone2.
+S Similarly to zone1 we create a new VNIC for zone2
+C dladm create-vnic -l net0 vnic2
+S Here is the zone configuration file for that:
+C cat zone2_vnic2.zonecfg
+S This is the way we use it to configure our first zone:
+C zonecfg -z zone2 -f demos/zones/resources/zone2_vnic2.zonecfg
+S Similarly to zone1, we have created (using sysconfig(1M) command) 
+S the profile file which contains hostname, root password, normal user\'s
+S name and password, time zone.  
+S In Solaris 11 it's an XML file which looks like this:
+C less demos/zones/resources/zone2-profile.xml
+S And here is how we use it for the zone's installation:
+C zoneadm -z zone2 clone -c demos/zones/resources/zone2-profile.xml zone1
+S Now, start zone2 and check if it keeps the Apache package we have 
+S installed in zone1
+C zoneadm -z zone2 boot
+C zlogin zone2 pkg list '*apache*'
+S You see? It is installed in the zone2 already.
+S Is it available as a service?
+C zlogin zone2 svcs '*apache*'
+S It is up and running and ready to use!
+S Try to access it from the global zone. What is the zone2's IP address?
+C zlogin zone2 ipadm show-addr
+S Check if you can see the default index.html with Firefox from the global
+S zone:
+C /usr/bin/firefox -new-tab http://10.0.2.22 > /dev/null 2>&1 
+S To make sure it's zone2 speaking, let's change the default index.html file:
+C zlogin zone2 'echo \"<html><body><h1>It is Zone2 and it works</h1></body></html>\" > /var/apache2/2.2/htdocs/index.html'
+S Check it again:
+C /usr/bin/firefox -new-tab http://10.0.2.22 > /dev/null 2>&1 &
+

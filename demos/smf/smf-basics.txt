@@ -1,0 +1,32 @@
+S This script demonstrates some of the key features of the Service S Management
+S Facility (SMF). SMF is responsible for managing system and application services
+S on Oracle Solaris 11.
+S
+S We can see a list of services that are enabled on a system
+C svcs
+S While the above command lists the services that are enabled (or temporarily
+S disabled), we can get a list of all installed services using the -a option
+C svcs -a
+S Let's get a count of those services - first the enabled services, and then
+S the installed services
+C svcs | wc -l
+C svcs -a | wc -l
+S Now let's get some basic information about a particular service, in this case
+S the service responsible for ensuring Oracle Solaris Zones are automatically
+S started on system reboot
+C svcs -l svc:/system/zones:default 
+S We could have also got the same result by taking a shorter form
+C svcs -l zones
+S We can list what dependencies the zones service has
+C svcs -d zones
+S And also what services depend on the zone service
+C svcs -D zones
+S In the above we didn't see any results, but let's look at the
+S svc:/systems/zones-monitoring:default service instance
+C svcs -D zones-monitoring
+S SMF uses services as a higher level object so that we never have to worry about
+S individual processes. But we can also easily find out this information.
+C svcs -p zones-monitoring
+S And finally, to quickly get a list of malfunctioning services (due to errors),
+S we can use the -xv option
+C svcs -xv

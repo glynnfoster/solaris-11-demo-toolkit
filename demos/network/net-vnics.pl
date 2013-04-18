@@ -1,0 +1,73 @@
+#!/usr/bin/perl -w
+
+use Term::ANSIColor;
+use Term::ANSIColor qw(:constants);
+use lib 'scripts';
+use demotools;
+
+require "scripts/demo-common.pl";
+
+system("clear");
+
+
+print $STORY_COL, "This demo shows the new virtual (VNIC) feature, as well\n";
+print $STORY_COL, "as the dladm and ipadm commands. Note that unlike ifconfig,\n";
+print $STORY_COL, "these commands are persistent.\n";
+print $STORY_COL, "\n";
+print $STORY_COL, "First we show the links. Links can be physical or virtual. Note\n";
+print $STORY_COL, "that for physical NICs, we use a new naming scheme net0, net1, etc\n";
+print $STORY_COL, "that hides the actual device name. This can be changed if the user\n";
+print $STORY_COL, "prefers the old names\n";
+print $CMD_COL;
+demotools::cmd("dladm show-link");
+print $STORY_COL, "Show only the physical ethernet NICs\n";
+print $CMD_COL;
+demotools::cmd("dladm show-ether");
+print $STORY_COL, "And to see the actual hardware devices used for the netX NICs\n";
+print $CMD_COL;
+demotools::cmd("dladm show-phys");
+print $STORY_COL, "The next command shows a bit more information like the physical\n";
+print $STORY_COL, "location\n";
+print $CMD_COL;
+demotools::cmd("dladm show-phys -L");
+print $STORY_COL, "So now we create a VNIC that we call vnic1, using net0 as it's interface\n";
+print $STORY_COL, "Note that VNICs are first-class NICs in terms of visibility (e.g. snoop)\n";
+print $CMD_COL;
+demotools::cmd("sudo dladm create-vnic -l net0 vnic1");
+print $STORY_COL, "Show the vnics\n";
+print $CMD_COL;
+demotools::cmd("dladm show-vnic");
+print $STORY_COL, "Show how easy it is to limit bandwith on a VNIC\n";
+print $CMD_COL;
+demotools::cmd("dladm set-linkprop -p maxbw=40 vnic1");
+print $CMD_COL;
+demotools::cmd("dladm show-vnic");
+print $STORY_COL, "Now we create an IP interface. This is analgous to plumbing the interface\n";
+print $CMD_COL;
+demotools::cmd("ipadm create-ip vnic1");
+print $STORY_COL, "Now we assign a persistent IP address to the VNIC\n";
+print $CMD_COL;
+demotools::cmd("ipadm create-addr -T static -a 10.2.3.4 vnic1/v4static");
+print $STORY_COL, "ping the VNIC\n";
+print $CMD_COL;
+demotools::cmd("ping 10.2.3.4");
+print $CMD_COL;
+demotools::cmd("dladm show-link");
+print $STORY_COL, "Show the \"database\" files where the dladm and ipadm commands keep their persistent data\n";
+print $CMD_COL;
+demotools::cmd("ls -lrt /etc/dladm /etc/ipadm");
+print $STORY_COL, "List all IP addresses\n";
+print $CMD_COL;
+demotools::cmd("ipadm show-addr");
+system("ping -sn 192.168.1.1 1000 > /dev/null &");
+demotools::cmd("dlstat -i 1");
+print $STORY_COL, "Now we tear down what we just created\n";
+print $CMD_COL;
+demotools::cmd("ipadm delete-addr vnic1/v4static");
+print $CMD_COL;
+demotools::cmd("ipadm delete-ip vnic1");
+print $CMD_COL;
+demotools::cmd("dladm delete-vnic vnic1");
+print $CMD_COL;
+demotools::cmd("dladm show-link");
+print RESET;

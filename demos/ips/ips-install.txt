@@ -1,0 +1,26 @@
+S This demo shows how to install and uninstall packages using the Image
+S Packaging System on Oracle Solaris 11.
+S
+S Let's say we want to do some network load testing, so we want to run the
+S utility called 'iperf'. The command will not be found because it's not
+S currently installed
+C iperf
+S Let's take a guess that the package might be called 'iperf' and try and
+S get some information about it
+C pkg info iperf
+S Let's use the -r option as is suggested
+C pkg info -r iperf
+S We can use IPS to search for iperf in the remote repository
+C pkg search iperf
+S We can also see what additional packages that iperf depends on
+C pkg search benchmark/iperf:depend::
+S We can also show what the contents of this package is
+S pkg contents -r iperf
+S So let's now go ahead and install this package
+C pkg install iperf
+S And run the iperf command again
+C iperf
+S We can easily check the contents of this package
+C pkg contents iperf
+S And finally, we can uninstall the package
+C pkg uninstall iperf

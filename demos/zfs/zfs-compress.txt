@@ -1,0 +1,21 @@
+S In this demo we will demonstrate how you can save disk space 
+S by using ZFS compression feature.
+S
+S We will move system manuals to a compressed ZFS file system and
+S compare the disk usage.
+S First, we create a new file system and turn compression on.
+C zfs create rpool/zman
+C zfs set compression=gzip rpool/zman 
+S Then we copy our system manuals to this directory. To save time, 
+S we copy only the first section of the manuals.
+C cp -rp /usr/share/man/man1 /rpool/zman/
+S Now compare the sizes:
+C du -sh /usr/share/man/man1 /rpool/zman/man1
+S We just saved about 60% of disk space. Not bad!
+S Check is you still can use this directory to read manuals:
+C bash -c "export MANPATH=/rpool/zman; man ls" 
+S It works!
+S  
+S This concludes ZFS Compression demo. 
+S Cleaning up...
+system("zfs destroy rpool/zman");

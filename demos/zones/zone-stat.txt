@@ -1,0 +1,28 @@
+system("cp scripts/primes.py /zones/zone1/root/var/tmp");
+system("cp scripts/primes.py /zones/zone2/root/var/tmp");
+system("chmod a+x /zones/zone1/root/var/tmp/primes.py");
+system("chmod a+x /zones/zone2/root//var/tmp/primes.py");
+S In this short demo we demonstrate how to use embedded Oracle Solaris tools
+S to monitor zones' activity and workloads. 
+S The standard zonestat command can show CPU utilization per zone 
+S and also as a share of the resources assigned to zones. 
+S Also it shows Memory and Network statistics.
+C gnome-terminal --command=\"zonestat -S name 2\" &
+S Now we can run a command in zone1 to see how it is reflected in the statistics
+C zlogin zone1 /var/tmp/primes.py 10000000
+S zonestat command has several useful options which can help not only to 
+S display the stats, but also collect reports for some period of time.
+S You can use this feature to produce your own chargeback reports.
+S Also zonestat can produce parseable output that can be used by other 
+S programs. Here is the example of a tool where zonestat output is piped
+S into the open source gnuplot program.
+C zoneplot &
+S Now let's run our heavy workload again in zone1:
+C zlogin zone1 /var/tmp/primes.py 10000000
+S And now in zone2:
+C zlogin zone2 /var/tmp/primes.py 10000000
+S Of course, for real production environment it's better to use Ops Center.
+S
+system("pkill zoneplot");
+system("pkill zonestat");
+demotools::wait4enter;

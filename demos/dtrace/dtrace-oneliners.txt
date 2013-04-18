@@ -1,0 +1,40 @@
+S There are a lot of useful one-liners in every scripting language: 
+S bash, sed, awk, Perl etc. DTrace is not an exception. Try the 
+S following one-liners and see what you can observe with them. 
+S The usual way to work with a DTrace script is to start it, wait 
+S for some time while DTrace is collecting data and then press Ctrl-C.
+S
+S What processes are being started currently? New processes with arguments:
+C dtrace -n 'proc:::exec-success { trace(curpsinfo->pr_psargs); }'
+S 
+S Longer version: new processes with arguments and time
+C dtrace -qn 'syscall::exec*:return { printf("%Y %s\\n",walltimestamp,curpsinfo->pr_psargs); }'
+S 
+S Which files are being opened by each starting process?
+C dtrace -n 'syscall::open*:entry { printf("%s %s",execname,copyinstr(arg1)); }'
+S 
+S System time is high. What are the programs doing, who is calling 
+S most of system calls?
+C dtrace -n 'syscall:::entry { @num[execname] = count(); }'
+S 
+S Which syscalls are being called most often?
+C dtrace -n 'syscall:::entry { @num[probefunc] = count(); }'
+S 
+S Which process is calling most of system calls?
+C dtrace -n 'syscall:::entry { @num[pid,execname] = count(); }'
+S 
+S Read IOPS are high. Who is reading now? Read bytes by process
+C dtrace -n 'sysinfo:::readch { @bytes[execname] = sum(arg0); }'
+S 
+S Write IOPS are high. Somebody is writing to disk, filling 
+S up all the space. Who is writing?
+C dtrace -n 'sysinfo:::writech { @bytes[execname] = sum(arg0); }'
+S 
+S How big are blocks being read? Read size distribution by process
+C dtrace -n 'sysinfo:::readch { @dist[execname] = quantize(arg0); }'
+S 
+S Write size distribution by process
+C dtrace -n 'sysinfo:::writech { @dist[execname] = quantize(arg0); }' 
+S Look for more scripts in your Solaris installation at /usr/dtrace/DTT
+S or online: google \'DTrace one liners\'
+demotools::wait4enter;

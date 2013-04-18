@@ -1,0 +1,12 @@
+S Now after we have rebooted into the working BE, check the status:
+C beadm list
+S Now you see that your original boot environment is active Now,
+S but on the next reboot your system will try to automatically boot
+S the corrupted one. Let's fix this:
+C beadm activate solaris
+S Now remove the corrupted boot environment:
+C beadm destroy new-be
+S Check the result:
+C beadm list
+S Now you know how to update your Oracle Solaris 11 system safely --
+S thanks to Boot Environments.

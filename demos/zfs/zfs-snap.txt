@@ -1,0 +1,66 @@
+S In this demo we will create and use ZFS snapshots and clones.
+S  
+S First of all, list ZFS snapshots that already exist in the system:
+C zfs list -t snapshot
+S Even when in a freshly installed system there is at least one
+S snapshot, it's called @install
+S Imagine you have created a file called myfile.txt in your home directory...
+C cd ~
+chdir("/export/home/lab");
+C echo 'Once upon a time...' > myfile.txt
+S Check if it exists and contains our words:
+C cat myfile.txt
+S Now let's create a snapshot of our file system.
+S First, we have to find out which filesystem we are on.
+C zfs list \$PWD
+S Now create a snapshot:
+C zfs snapshot rpool/export/home/lab@snap1
+S Imagine we have accidentally deleted our file:
+C rm myfile.txt
+S It's not there anymore!
+C cat myfile.txt
+S What can we do? Simply rollback your snapshot and your file is back!
+C zfs rollback rpool/export/home/lab@snap1
+S Check your file again:
+C cat myfile.txt
+S Your file is there!
+S   
+S It's simple, it's fast, it doesn't require extra space until your start
+S making changes.
+S   
+S Couple of best practice tips:
+S 
+S - Use a naming scheme to name your snapshots. The simplest scheme is to use 
+S the output of date command to timestamp your snapshots. Also you can give
+S your snapshots meaningful names like @before-update
+S  
+S - It is also possible to delegate certain rights to normal users. For
+S example, you can delegate the rights to snapshot and rollback their home
+S directories.
+S   
+S - You can automate snapshots by enabling the zfs/auto-snapshot service.
+S   
+S Now we are going to create a clone of the ZFS file system. Clones are
+S similar to snapshots, but they can be modified independently from the
+S parent file system.
+C zfs clone rpool/export/home/lab@snap1 rpool/export/home/lab2
+S Now you can go to the cloned file system and modify files there. Files 
+S in the original file system will remain intact.
+C cd /export/home/lab2
+chdir("/export/home/lab2");
+C gzip myfile.txt
+C rm -rf Desktop Documents Downloads
+C ls
+C cd /export/home/lab
+chdir("/export/home/lab");
+C ls
+S Similarly to snapshots, clones take very little disk space until you start
+S making changes.
+C zfs list | grep home/lab
+S This completes ZFS Snapshots and Clones demo session.
+S Cleaning up...
+system("zfs destroy rpool/export/home/lab2");
+system("zfs destroy rpool/export/home/lab\@snap1");
+system("rm ~lab/myfile.txt");
+print RESET;
+

@@ -1,0 +1,27 @@
+S Here we will demonstrate the basic zone installation.
+S We start with creating a ZFS file system to store zone root directories
+C zfs create -o mountpoint=/zones rpool/zones
+S 
+S To automate the process as much as possible and to make it more
+S "cloud-like" we have created several configuration files 
+S which we are going to use for this installation.
+S 
+S First, here is the simplest possible zone configuration file
+C cat demos/zones/resources/simple.zonecfg
+S Note that in Solaris 11, with network virtualization available, zones can
+S be configured with automatic network configuration, no need to set up 
+S networking at all. But for demonstration purposes we will create a separate
+S VNIC (virtual network interface card) and use it for the zone. 
+S Let's create a VNIC:
+C dladm create-vnic -l net0 vnic1
+S Here is the zone configuration file for that:
+C cat demos/zones/resources/zone1_vnic1.zonecfg
+S This is the way we use it to configure our first zone:
+C zonecfg -z zone1 -f demos/zones/resources/zone1_vnic1.zonecfg
+S Another configuration file contains zone identification information:
+S the usual things you set up when you start a system for the first time:
+S hostname, root password, normal user name and password, time zone.  
+S In Solaris 11 it's an XML file which looks like this:
+C cat demos/zones/resources/zone1-profile.xml
+S And here is how we use it for the zone's installation:
+C zoneadm -z zone1 install -c demos/zones/resources/zone1-profile.xml

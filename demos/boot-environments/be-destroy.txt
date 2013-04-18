@@ -1,0 +1,14 @@
+S Now we will 'accidentally' destroy a vital part of our current BE. 
+S Then we will boot our previous boot environment and make sure
+S everything works as before.
+S 
+S Let's remove something really important, like /usr/bin directory.
+C rm -rf /usr/bin
+C ls
+S Time to reboot. Don't forget to boot your old BE called solaris,
+S not the new one called new-be (unless you want to prove that
+S it won't boot). Make the appropriate choice in the GRUB menu.
+S  
+S Most likely, as we destroyed the critical part of the system,
+S regular rebooting procedures won't work. Go to the VirtualBox menu,
+S choose Machine->Reset.

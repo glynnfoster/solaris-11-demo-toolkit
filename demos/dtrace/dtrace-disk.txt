@@ -1,0 +1,25 @@
+$ENV{PATH}="/home/lab/bin" . ":" . $ENV{PATH};
+$ENV{DISPLAY}="localhost:0";
+S In this demo we will show how DTrace can solve problems which 
+S seem to be unsolvable by usual sysadmin tools.
+S
+S Imagine a situation when you see that your free space on one of your
+S storage arrays has decreased significantly since yesterday and is
+S decreasing right now. You see write activity with iostat on one
+S of the disks, but who produces such activity? Who is writing 
+S all the time and eating disk space?
+S 
+S First, we start a simple program, which does exactly that: eats
+S disk space. We called it DiskEater.
+system("gnome-terminal --command=\"/home/lab/bin/diskeater.py -s 100000 -o /home/lab/bigfile\" & ");
+S Check your free disk space periodically (we'll check it here
+S 5 times with 5 second interval.
+C for ((i=0; i<5; i++)) ; do zfs list rpool/export/home/lab ; sleep 5; done
+S Do you see the danger? Let's find out who is eating our space.
+S We'll use a tool from DTrace Toolkit--one of more than 230 very useful
+S scripts available at /usr/dtrace/DTT
+C /usr/dtrace/DTT/rwtop
+S Now we see who is to blame!
+S You can now close the DiskEater terminal window, it will stop the process.
+S Don't forget to remove the file 'bigfile' from /home/lab.
+demotools::wait4enter;

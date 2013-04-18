@@ -1,0 +1,53 @@
+system("cp scripts/primes.py /zones/zone1/root/var/tmp");
+system("cp scripts/primes.py /zones/zone2/root/var/tmp");
+system("chmod a+x /zones/zone1/root/var/tmp/primes.py");
+system("chmod a+x /zones/zone2/root/var/tmp/primes.py");
+S In this demo we are going to demonstrate resource management for
+S zones.
+S We assume that there are two zones, zone1 and zone2 already configured
+S and installed in the system. Let's check:
+C zoneadm list -cv
+S If it's not the case, please stop this demo (Ctrl-C) and run demo
+S scripts to create and install zone1 and clone it into zone2.
+S To manage zones resources we have to add resource management options 
+S to their configurations. To do that, we have to halt the zones.
+C zoneadm -z zone1 halt
+C zoneadm -z zone2 halt
+S Then we add a parameter to cap CPU usage to both zones configurations:
+C zonecfg -z zone1 'add capped-cpu; set ncpus=1; end; exit'
+C zonecfg -z zone2 'add capped-cpu; set ncpus=1; end; exit'
+S After we have changed zone configurations, boot the zones again.
+C zoneadm -z zone1 boot
+C zoneadm -z zone2 boot
+S Wait a couple minutes until the zones booted. We can watch this 
+S process with zoneplot:
+C zoneplot &
+S Wait until both zones CPU usage dropped to almost zero and start some
+S CPU consuming tasks in each zone. We will use a simple infinite loop.
+C zlogin zone1 'while true; do date > /dev/null ; done' &
+C zlogin zone2 'while true; do date > /dev/null ; done' &
+S Watch how the zones compete for resources. We can limit each zone's 
+S CPU consumption. First, we limit zone1 to 20 percent of CPU:
+C prctl -n zone.cpu-cap -r -v 20 -i zone zone1
+S Look how zone2 consumption jumped in the absense of competing zone1.
+S Let's limit zone2 to 30 percent of CPU:
+C prctl -n zone.cpu-cap -r -v 30 -i zone zone2
+S Look at the changed CPU consumption on the chart.
+S Let's give zone1 some more CPU, like 40 percent:
+C prctl -n zone.cpu-cap -r -v 40 -i zone zone1
+S ...and limit zone2 at 20 percent:
+C prctl -n zone.cpu-cap -r -v 20 -i zone zone2
+S Watch a little bit at the charts and then kill the processes:
+C pkill -f -z zone1 'do date'
+C pkill -f -z zone2 'do date'
+S Now let's run our prime numbers program and measure the execution time 
+S in both zones. Remember, zone1 now has 40 percent CPU, zone2 has only 20
+S percent. 
+C time zlogin zone1 /var/tmp/primes.py 20000000
+C time zlogin zone2 /var/tmp/primes.py 20000000
+S Note that real execution time is two times higher in zone2, but
+S user and system times are almost the same. Please explain.
+S 
+demotools::wait4enter;
+S Clean up time!
+C pkill zoneplot

@@ -1,0 +1,21 @@
+S This script demonstrates how to perform intergity checks on packages.
+C pkg contents -t file -o owner,group,mode,pkg.size,path sudo
+S Show how we can verify a package has not been compromised
+C pkg verify sudo
+S Let's check the permission bits of sudo
+C ls -l /usr/bin/sudo
+S Let's say someone changed the permissions bits on us like this
+C chmod 777 /usr/bin/sudo
+S Let's verify again, and it will return an error
+S pkg verify sudo
+S Now let's fix this package
+S pkg fix sudo
+S Let's verify again to make sure it's all right now:
+C pkg verify sudo
+S The next few lines show an interesting way of getting a package name from
+S a file name
+S We first get a SHA1 digest of 'vi'
+C digest -a sha1 /usr/bin/vi
+S Since the digest is saved in the package DB, we can search for that hash
+S and see what matches it
+C pkg search -l 78ff0954c1f0381504356d08209c1fd3dfb2f9a1

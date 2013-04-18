@@ -1,0 +1,71 @@
+#!/usr/bin/perl -w
+
+use Term::ANSIColor;
+use Term::ANSIColor qw(:constants);
+use lib 'scripts';
+use demotools;
+
+require "scripts/demo-common.pl";
+
+system("clear");
+
+
+print $STORY_COL, "This demo show the new management interface for IPMP and how easy\n";
+print $STORY_COL, "it is to set up a reliable network connection.\n";
+print $STORY_COL, "\n";
+print $STORY_COL, "First we create 2 VNICs from which we'll create our IPMP device.\n";
+print $CMD_COL;
+demotools::cmd("dladm create-vnic -l net0 vnic5");
+print $CMD_COL;
+demotools::cmd("dladm create-vnic -l net1 vnic6");
+print $CMD_COL;
+demotools::cmd("dladm show-vnic");
+print $STORY_COL, "Now we create our IPMP device and give it the name ipmp0 (can be any name)\n";
+print $CMD_COL;
+demotools::cmd("ipadm create-ipmp ipmp0");
+print $STORY_COL, "It shows up as an interface:\n";
+print $CMD_COL;
+demotools::cmd("ipadm show-if");
+print $STORY_COL, "Next we create IP interfaces on our VNICs (plumb them):\n";
+print $CMD_COL;
+demotools::cmd("ipadm create-ip vnic5");
+print $CMD_COL;
+demotools::cmd("ipadm create-ip vnic6");
+print $STORY_COL, "Then we add those VNICs to our IPMP device:\n";
+print $CMD_COL;
+demotools::cmd("ipadm add-ipmp -i vnic5 -i vnic6 ipmp0");
+print $CMD_COL;
+demotools::cmd("ipadm show-if");
+print $STORY_COL, "And finally we give our IPMP device an address:\n";
+print $CMD_COL;
+demotools::cmd("ipadm create-addr -T static -a 10.1.2.3/24 ipmp0/v4");
+print $CMD_COL;
+demotools::cmd("ipadm show-if");
+print $STORY_COL, "We can ping it:\n";
+print $CMD_COL;
+demotools::cmd("ping 10.1.2.3");
+print $STORY_COL, "We can get statistics on this IPMP interface:\n";
+print $CMD_COL;
+demotools::cmd("ipmpstat -i");
+print $CMD_COL;
+demotools::cmd("ipmpstat -an");
+print $STORY_COL, "This demostrates basic operations to create a reliable network connection.\n";
+print $STORY_COL, "\n";
+print $STORY_COL, "Time to clean up!\n";
+print $CMD_COL;
+demotools::cmd("ipadm delete-addr ipmp0/v4");
+print $CMD_COL;
+demotools::cmd("ipadm remove-ipmp -i vnic5 -i vnic6 ipmp0");
+print $CMD_COL;
+demotools::cmd("ipadm delete-ipmp ipmp0");
+print $CMD_COL;
+demotools::cmd("ipadm delete-ip vnic5");
+print $CMD_COL;
+demotools::cmd("ipadm delete-ip vnic6");
+print $CMD_COL;
+demotools::cmd("dladm delete-vnic vnic5");
+print $CMD_COL;
+demotools::cmd("dladm delete-vnic vnic6");
+print $CMD_COL;
+demotools::cmd("dladm show-link");
+print RESET;
