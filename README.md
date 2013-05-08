@@ -1,7 +1,7 @@
 Oracle Solaris 11 Demo Toolkit
 ==============================
 
-April 2013
+May 2013
 
 What is it?
 -----------
