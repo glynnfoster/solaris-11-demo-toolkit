@@ -1,4 +1,4 @@
-Blah Oracle Solaris 11 Demo Toolkit
+Oracle Solaris 11 Demo Toolkit
 ==============================
 
 May 2013
